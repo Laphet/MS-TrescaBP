@@ -160,7 +160,7 @@ def default_tr_f2(y: float, t: float):
 
 
 def default_cell_cff(x: float, y: float):
-    E0, E1, nu0, nu1 = 150., 250., 0.35, 0.45
+    E0, E1, nu0, nu1 = 200., 200., 0.30, 0.30
     if 1. / 8 <= x <= 7. / 8 and 3. / 8 <= y <= 5. / 8:
         return get_C_from_E_nu(E0, nu0)
     elif 3. / 8 <= x <= 5. / 8 and 1. / 8 <= y <= 7. / 8:
@@ -189,6 +189,6 @@ class Context:
         cff_data = np.zeros((grids_on_cell, grids_on_cell, CFF_LEN))
         for sub_elem_ind_x in range(grids_on_cell):
             for sub_elem_ind_y in range(grids_on_cell):
-                x, y = hh * (0.5 + sub_elem_ind_x), hh * (0.5 + sub_elem_ind_y)
+                x, y = self.hh * (0.5 + sub_elem_ind_x), self.hh * (0.5 + sub_elem_ind_y)
                 cff_data[sub_elem_ind_x, sub_elem_ind_y, :] = cell_cff(x, y)
         self.cff_data = cff_data
