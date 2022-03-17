@@ -71,6 +71,7 @@ def get_locbase_grad_val(loc_ind: int, x: float, y: float):
     return grad_val_x, grad_val_y
 
 
+base_grad2_val_at_quad_pnt = np.array([0.25, -0.25, -0.25, 0.25])
 base_grad_val_at_quad_pnt = np.zeros((LOC_NDS, DIM, QUAD_PNTS))
 base_val_at_quad_pnt = np.zeros((LOC_NDS, QUAD_PNTS))
 quad_wghts = np.zeros((QUAD_PNTS, ))
@@ -155,12 +156,20 @@ def Zero_s2dto2d(x: float, y: float, t: float):
     return 0.0, 0.0
 
 
+def default_tr_f1(x: float, t: float):
+    return 0.01 * np.sin(2.0 * np.pi * x) * t, 0.0
+
+
 def default_tr_f2(y: float, t: float):
     return 0.08 * (1.25 - y) * t, -0.01 * t
 
 
-def default_cell_cff(x: float, y: float):
-    E0, E1, nu0, nu1 = 200., 200., 0.30, 0.30
+def default_bdy_f(x: float, y: float, t: float):
+    return 0.0, -1.4e-4
+
+
+def default_cell_cff(x: float, y: float, paras=None):
+    E0, E1, nu0, nu1 = 77.2, 117., 0.33, 0.43
     if 1. / 8 <= x <= 7. / 8 and 3. / 8 <= y <= 5. / 8:
         return get_C_from_E_nu(E0, nu0)
     elif 3. / 8 <= x <= 5. / 8 and 1. / 8 <= y <= 7. / 8:
@@ -169,12 +178,24 @@ def default_cell_cff(x: float, y: float):
         return get_C_from_E_nu(E1, nu1)
 
 
+def connected_cell_cff(x: float, y: float, paras=None):
+    E0, E1, nu0, nu1 = 77.2, 117., 0.33, 0.43
+    if 3. / 8 <= y <= 5. / 8 or 3. / 8 <= x <= 5. / 8:
+        return get_C_from_E_nu(E0, nu0)
+    else:
+        return get_C_from_E_nu(E1, nu1)
+
+
+def const_cell_cff(x: float, y: float, paras):
+    return paras[0], paras[1], paras[2], paras[3], paras[4], paras[5]
+
+
 default_T = 1.0
 default_Tresca_bnd = 0.004
 
 
 class Context:
-    def __init__(self, prd: int, grids_on_cell: int, cell_cff=default_cell_cff):
+    def __init__(self, prd: int, grids_on_cell: int, cell_cff=default_cell_cff, paras=None):
         self.prd = prd
         self.grids_on_cell = grids_on_cell
         self.grids_on_dmn = prd * grids_on_cell
@@ -190,5 +211,5 @@ class Context:
         for sub_elem_ind_x in range(grids_on_cell):
             for sub_elem_ind_y in range(grids_on_cell):
                 x, y = self.hh * (0.5 + sub_elem_ind_x), self.hh * (0.5 + sub_elem_ind_y)
-                cff_data[sub_elem_ind_x, sub_elem_ind_y, :] = cell_cff(x, y)
+                cff_data[sub_elem_ind_x, sub_elem_ind_y, :] = cell_cff(x, y, paras=paras)
         self.cff_data = cff_data

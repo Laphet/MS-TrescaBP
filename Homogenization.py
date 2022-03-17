@@ -8,8 +8,8 @@ CORRS_NUM = 3
 
 
 class Homogenization(Context):
-    def __init__(self, prd, grids_on_cell, cell_cff=default_cell_cff):
-        super().__init__(prd, grids_on_cell, default_cell_cff)
+    def __init__(self, grids_on_cell, cell_cff=default_cell_cff, paras=None):
+        super().__init__(1, grids_on_cell, cell_cff, paras)
 
     def get_loc_inds(self, elem_ind_x, ele_ind_y):
         inds = np.zeros((LOC_FDMS, ), dtype=np.int32)

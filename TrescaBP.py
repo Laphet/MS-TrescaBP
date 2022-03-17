@@ -19,8 +19,9 @@ def stepsize_theta(iter_ind: int):
 
 
 class TrescaBP(Context):
-    def __init__(self, prd, grids_on_cell, cell_cff=default_cell_cff):
-        super().__init__(prd, grids_on_cell, default_cell_cff)
+
+    def __init__(self, prd, grids_on_cell, cell_cff=default_cell_cff, paras=None):
+        super().__init__(prd, grids_on_cell, cell_cff, paras)
         self.grids_on_time = 1
         self.T = 1.0
         self.bdy_f = None
@@ -30,7 +31,7 @@ class TrescaBP(Context):
         self.u_init = None
         self.Amat = None
 
-    def set_conds(self, grids_on_time, T=default_T, bdy_f=Zero_s2dto2d, tr_f1=Zero_s1dto2d, tr_f2=default_tr_f2, Tresca_bnd=default_Tresca_bnd, u_init='D'):
+    def set_conds(self, grids_on_time, T=default_T, bdy_f=Zero_s2dto2d, tr_f1=default_tr_f1, tr_f2=default_tr_f2, Tresca_bnd=default_Tresca_bnd, u_init='D'):
         self.grids_on_time = grids_on_time
         self.T = T
         self.tau = T / grids_on_time
@@ -45,8 +46,8 @@ class TrescaBP(Context):
         self.set_Amat()
 
     def get_loc_inds(self, elem_ind_x, elem_ind_y):
-        inds = np.zeros((LOC_FDMS, ), dtype=np.int32)
-        is_clamped_fdm = np.ones((LOC_FDMS, ))
+        inds = np.zeros((LOC_FDMS,), dtype=np.int32)
+        is_clamped_fdm = np.ones((LOC_FDMS,))
         nd_ind = elem_ind_y * (self.grids_on_dmn + 1) + elem_ind_x
         inds[0] = nd_ind * XY
         inds[1] = nd_ind * XY + 1
@@ -78,9 +79,9 @@ class TrescaBP(Context):
 
     def set_Amat(self):
         max_data_len = self.total_elems * LOC_FDMS**2
-        Amat_row = np.zeros((max_data_len, ), dtype=np.int32)
-        Amat_col = np.zeros((max_data_len, ), dtype=np.int32)
-        Amat_data = np.zeros((max_data_len, ))
+        Amat_row = np.zeros((max_data_len,), dtype=np.int32)
+        Amat_col = np.zeros((max_data_len,), dtype=np.int32)
+        Amat_data = np.zeros((max_data_len,))
         for elem_ind in range(self.total_elems):
             elem_ind_y, elem_ind_x = divmod(elem_ind, self.grids_on_dmn)
             C = self.cff_data[elem_ind_x % self.grids_on_cell, elem_ind_y % self.grids_on_cell, :]
@@ -96,7 +97,7 @@ class TrescaBP(Context):
         self.Amat = Amat
 
     def get_loc_rhs_bdy_f(self, elem_ind_x, elem_ind_y, t):
-        loc_rhs = np.zeros((LOC_FDMS, ))
+        loc_rhs = np.zeros((LOC_FDMS,))
         bdy_f_at_quad_pnts = np.zeros((XY, QUAD_PNTS))
         x_center, y_center = (elem_ind_x + 0.5) * self.h, (elem_ind_y + 0.5) * self.h
         for quad_pnt_ind in range(QUAD_PNTS):
@@ -114,7 +115,7 @@ class TrescaBP(Context):
         return 0.25 * self.h**2 * loc_rhs
 
     def get_loc_rhs_tr_f1(self, elem_ind_x, elem_ind_y, t):
-        loc_rhs = np.zeros((LOC_FDMS, ))
+        loc_rhs = np.zeros((LOC_FDMS,))
         if elem_ind_y != self.grids_on_dmn - 1:
             return loc_rhs
         tr_f1_at_quad_pnts = np.zeros((XY, QUAD_ORDER))
@@ -133,7 +134,7 @@ class TrescaBP(Context):
         return 0.5 * self.h * loc_rhs
 
     def get_loc_rhs_tr_f2(self, elem_ind_x, elem_ind_y, t):
-        loc_rhs = np.zeros((LOC_FDMS, ))
+        loc_rhs = np.zeros((LOC_FDMS,))
         if elem_ind_x != 0:
             return loc_rhs
         tr_f2_at_quad_pnts = np.zeros((XY, QUAD_ORDER))
@@ -152,7 +153,7 @@ class TrescaBP(Context):
         return 0.5 * self.h * loc_rhs
 
     def get_rhs(self, u_minus, t):
-        rhs = np.zeros((self.total_fdms, ))
+        rhs = np.zeros((self.total_fdms,))
         for elem_ind in range(self.total_elems):
             elem_ind_y, elem_ind_x = divmod(elem_ind, self.grids_on_dmn)
             loc_inds, P = self.get_loc_inds(elem_ind_x, elem_ind_y)
@@ -166,14 +167,14 @@ class TrescaBP(Context):
 
     def get_J(self, u):
         data = u[0:2 * self.grids_on_dmn:2]
-        assert data.shape == (self.grids_on_dmn, )
+        assert data.shape == (self.grids_on_dmn,)
         h_HT = self.h * self.Tresca_bnd
         data = h_HT * np.abs(data)
         data[0] = 0.5 * data[0]
         return np.sum(data)
 
     def get_subgrad_J(self, u):
-        subgrad_J = np.zeros((self.total_fdms, ))
+        subgrad_J = np.zeros((self.total_fdms,))
         h_HT = self.h * self.Tresca_bnd
         for fdm_ind in range(0, 2 * self.grids_on_dmn, 2):
             if fdm_ind == 0:
@@ -196,14 +197,14 @@ class TrescaBP(Context):
         return val
 
     def get_subgrad_obj(self, v, rhs):
-        subgrad_obj = np.zeros((self.total_fdms, ))
+        subgrad_obj = np.zeros((self.total_fdms,))
         subgrad_obj += self.tau * self.Amat.dot(v)
         subgrad_obj += self.get_subgrad_J(v)
         subgrad_obj -= rhs
         return subgrad_obj
 
     def get_grad_smooth_part(self, v, rhs):
-        grad_smooth_part = np.zeros((self.total_fdms, ))
+        grad_smooth_part = np.zeros((self.total_fdms,))
         grad_smooth_part += self.tau * self.Amat.dot(v)
         grad_smooth_part -= rhs
         return grad_smooth_part
@@ -215,7 +216,7 @@ class TrescaBP(Context):
         return val
 
     def get_prox_nonsmooth_part(self, v, s):
-        prox_v = np.zeros((self.total_fdms, ))
+        prox_v = np.zeros((self.total_fdms,))
         prox_v[2 * self.grids_on_dmn:] = v[2 * self.grids_on_dmn:]
         prox_v[1:2 * self.grids_on_dmn:2] = v[1:2 * self.grids_on_dmn:2]
         h_HT = self.h * self.Tresca_bnd
@@ -233,7 +234,7 @@ class TrescaBP(Context):
         return prox_v
 
     def get_BT_line_search(self, grad_g, v, s, rhs):
-        s_plus, v_plus = s, np.zeros((self.total_fdms, ))
+        s_plus, v_plus = s, np.zeros((self.total_fdms,))
         for ls_iter_ind in range(MAX_ITERS):
             v_plus = self.get_prox_nonsmooth_part(v - s_plus * grad_g, s_plus)
             current_val = self.get_val_smooth_part(v_plus, rhs)
@@ -245,8 +246,8 @@ class TrescaBP(Context):
         return s_plus, v_plus
 
     def get_line_search(self, g, v, rhs):
-        v_plus = np.zeros((self.total_fdms, ))
-        t = BT_TMAX
+        v_plus = np.zeros((self.total_fdms,))
+        t = BT_TZERO
         f = self.get_obj_val(v, rhs)
         g_sq = np.dot(g, g)
         for iter_ind in range(MAX_ITERS):
@@ -269,7 +270,6 @@ class TrescaBP(Context):
             v_temp = v + (iter_ind - 2.) / (iter_ind + 1.) * (v - v_minus)  # Nesterov acceleration
             grad_g = self.get_grad_smooth_part(v_temp, rhs)
             s_plus, v_plus = self.get_BT_line_search(grad_g, v_temp, s, rhs)
-            # v, info = self.get_line_search(g, v_minus, rhs)
             if (np.linalg.norm(v_plus - v_minus) <= TOL * np.linalg.norm(v)):
                 info = iter_ind
                 delta_u = v_plus
@@ -320,6 +320,6 @@ class TrescaBP(Context):
 
 
 if __name__ == "__main__":
-    tbp = TrescaBP(1, 128)
+    tbp = TrescaBP(1, 64)
     tbp.set_conds(8)
     tbp.solve()
