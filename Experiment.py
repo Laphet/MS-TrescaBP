@@ -225,11 +225,11 @@ def test_set(op='a'):
         homo_bvp = TrescaBP(prd, GRIDS_ON_CELL, const_cell_cff, C_eff)
         homo_bvp.set_conds(GRIDS_ON_TIME)
 
-    logging.info("Config: epsilon=1/{0:d}, h=1/{1:d}".format(ms_bvp.prd, ms_bvp.grids_on_dmn))
+    logging.info("Config: epsilon=1/{0:d}, h=1/{1:d}, tau=1/{2:d}".format(ms_bvp.prd, ms_bvp.grids_on_dmn, ms_bvp.grids_on_time))
     u_ms = ms_bvp.u_init
     u_homo = homo_bvp.u_init
     errors = np.zeros((3, GRIDS_ON_TIME))
-    write_log = 0.1 * GRIDS_ON_TIME
+    write_log = 0.01 * GRIDS_ON_TIME
     for time_ind in range(1, GRIDS_ON_TIME + 1):
         t = time_ind / GRIDS_ON_TIME
         u_ms, info_ms = ms_bvp.get_next_u(u_ms, t)
@@ -239,7 +239,7 @@ def test_set(op='a'):
         errors[:, time_ind - 1] = get_errors(u_ms, u_homo, corrs, ms_bvp, homo_bvp)
         if time_ind >= write_log:
             logging.info("Progress......{0:.2f}%.".format(time_ind / GRIDS_ON_TIME * 100.))
-            write_log += 0.1 * GRIDS_ON_TIME
+            write_log += 0.01 * GRIDS_ON_TIME
 
 
 #    plot_final_frame = True
