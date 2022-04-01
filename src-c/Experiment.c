@@ -320,7 +320,7 @@ PetscErrorCode get_errors(Vec u_ms, Vec u_homo, TrescaBP ms_bvp, TrescaBP homo_b
 
 PetscErrorCode test_set(char op, Homogenization *homo, TrescaBP *ms_bvp, TrescaBP *homo_bvp)
 {
-    PetscErrorCode ierr;
+    PetscErrorCode ierr = 0;
     unsigned int prd;
     switch (op)
     {
@@ -410,13 +410,13 @@ int main(int argc, char *argv[])
     ierr = PetscInitialize(&argc, &argv, NULL, NULL);
     if (ierr)
         return ierr;
-    /*     
+    /*
     {
         int pid, sum = 0;
         MPI_Comm_rank(PETSC_COMM_WORLD, &pid);
         MPI_Reduce(&pid, &sum, 1, MPI_INT, MPI_SUM, 0, PETSC_COMM_WORLD);
         printf("pid=%d, sum=%d.\n", pid, sum);
-    } 
+    }
     */
     char op[] = "a";
     ierr = PetscOptionsGetString(NULL, NULL, "-op", op, sizeof(op), NULL);
@@ -425,7 +425,7 @@ int main(int argc, char *argv[])
     TrescaBP ms_bvp, homo_bvp;
     ierr = test_set(op[0], &homo, &ms_bvp, &homo_bvp);
     get_timestr(timestr);
-    ierr = PetscPrintf(PETSC_COMM_WORLD, "%s...... Option=[%s], epsilon=1/%d, h=1/%d.\n", timestr, op, ms_bvp.ctx.prd, ms_bvp.ctx.grids_on_cell);
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "%s...... Option=[%s], epsilon=1/%d, h=1/%d.\n", timestr, op, ms_bvp.ctx.prd, ms_bvp.ctx.grids_on_dmn);
     CHKERRQ(ierr);
     PetscScalar errors[3 * ms_bvp.grids_on_time], max_error_l2 = 0.0, max_error_h1 = 0.0, max_error_h1_corr = 0.0;
 

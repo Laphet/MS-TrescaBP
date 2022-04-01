@@ -7,6 +7,9 @@
 #define CFF_LEN 6
 #define LOC_NDS 4
 #define LOC_FDMS 8
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 extern const double QUAD_CORD[QUAD_ORDER];
 extern const double QUAD_WGHT[QUAD_ORDER];
