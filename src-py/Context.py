@@ -199,11 +199,11 @@ class Context:
         self.prd = prd
         self.grids_on_cell = grids_on_cell
         self.grids_on_dmn = prd * grids_on_cell
-        self.h = 1.0 / (prd * grids_on_cell)
-        self.total_nds = (1 + prd * grids_on_cell)**2
-        self.total_elems = (prd * grids_on_cell)**2
-        self.total_fdms = 2 * (1 + prd * grids_on_cell)**2
         self.hh = 1.0 / grids_on_cell
+        self.h = 1.0 / (prd * grids_on_cell)
+        self.total_elems = (prd * grids_on_cell)**2
+        self.total_nds = (1 + prd * grids_on_cell)**2
+        self.total_fdms = 2 * (1 + prd * grids_on_cell)**2
         self.total_nds_on_cell = (1 + grids_on_cell)**2
         self.total_elems_on_cell = (grids_on_cell)**2
         self.total_fdms_on_cell = 2 * (grids_on_cell)**2

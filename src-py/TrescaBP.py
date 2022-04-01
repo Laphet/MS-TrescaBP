@@ -270,7 +270,7 @@ class TrescaBP(Context):
             v_temp = v + (iter_ind - 2.) / (iter_ind + 1.) * (v - v_minus)  # Nesterov acceleration
             grad_g = self.get_grad_smooth_part(v_temp, rhs)
             s_plus, v_plus = self.get_BT_line_search(grad_g, v_temp, s, rhs)
-            if (np.linalg.norm(v_plus - v_minus) <= TOL * np.linalg.norm(v)):
+            if (np.linalg.norm(v_plus - v) <= TOL * np.linalg.norm(v)):
                 info = iter_ind
                 delta_u = v_plus
                 break

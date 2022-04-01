@@ -8,11 +8,12 @@ CORRS_NUM = 3
 
 
 class Homogenization(Context):
+
     def __init__(self, grids_on_cell, cell_cff=default_cell_cff, paras=None):
         super().__init__(1, grids_on_cell, cell_cff, paras)
 
     def get_loc_inds(self, elem_ind_x, ele_ind_y):
-        inds = np.zeros((LOC_FDMS, ), dtype=np.int32)
+        inds = np.zeros((LOC_FDMS,), dtype=np.int32)
         nd_ind_x, nd_ind_y = elem_ind_x, ele_ind_y
         nd_ind = nd_ind_y * self.grids_on_cell + nd_ind_x
         inds[0] = nd_ind * XY
@@ -80,9 +81,9 @@ class Homogenization(Context):
 
     def solve(self):
         max_data_len = self.total_elems_on_cell * LOC_FDMS**2
-        Amat_row = np.zeros((max_data_len, ), dtype=np.int32)
-        Amat_col = np.zeros((max_data_len, ), dtype=np.int32)
-        Amat_data = np.zeros((max_data_len, ))
+        Amat_row = np.zeros((max_data_len,), dtype=np.int32)
+        Amat_col = np.zeros((max_data_len,), dtype=np.int32)
+        Amat_data = np.zeros((max_data_len,))
         rhs = np.zeros((CORRS_NUM, self.total_fdms_on_cell))
         for elem_ind in range(self.total_elems_on_cell):
             elem_ind_y, elem_ind_x = divmod(elem_ind, self.grids_on_cell)
@@ -113,7 +114,7 @@ class Homogenization(Context):
         assert info == 0
         corrs[2, :] = sol
 
-        C_eff = np.zeros((CFF_LEN, ))
+        C_eff = np.zeros((CFF_LEN,))
         C_eff[0] = self.hh**DIM * np.sum(self.cff_data[:, :, 0]) - np.dot(rhs[0, :], corrs[0, :])
         C_eff[1] = self.hh**DIM * np.sum(self.cff_data[:, :, 1]) - np.dot(rhs[1, :], corrs[1, :])
         C_eff[2] = self.hh**DIM * np.sum(self.cff_data[:, :, 2]) - np.dot(rhs[2, :], corrs[2, :])
@@ -124,7 +125,6 @@ class Homogenization(Context):
 
 
 if __name__ == "__main__":
-    ctx = Context(4, 32)
-    homo_pro = Homogenization(ctx)
+    homo_pro = Homogenization(64)
     corrs, C_eff = homo_pro.solve()
     print(C_eff)
