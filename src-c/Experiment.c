@@ -4,8 +4,8 @@
 #include <time.h>
 #include "mpi.h"
 
-const unsigned int GRIDS_ON_CELL = 8;
-const unsigned int GRIDS_ON_TIME = 128;
+const unsigned int GRIDS_ON_CELL = 32;
+const unsigned int GRIDS_ON_TIME = 1024;
 const int MAX_LEN_TIMESTR = 26;
 const int MAX_LEN_FILENAME = 24;
 
@@ -338,7 +338,7 @@ PetscErrorCode test_set(char op, Homogenization *homo, TrescaBP *ms_bvp, TrescaB
     case 'a':
         ierr = Homogenization_init_(homo, GRIDS_ON_CELL, default_cell_cff, NULL);
         ierr = Homogenization_solve(homo);
-        prd = 2;
+        prd = 4;
         ierr = TrescaBP_init_(ms_bvp, prd, GRIDS_ON_CELL, default_cell_cff, NULL);
         ierr = TrescaBP_set_conds(ms_bvp, GRIDS_ON_TIME, default_T, default_bdy_f, default_tr_f1, default_tr_f2, default_Tresca_bnd);
         ierr = TrescaBP_init_(homo_bvp, prd, GRIDS_ON_CELL, const_cell_cff, &homo->C_eff[0]);
@@ -347,7 +347,7 @@ PetscErrorCode test_set(char op, Homogenization *homo, TrescaBP *ms_bvp, TrescaB
     case 'b':
         ierr = Homogenization_init_(homo, GRIDS_ON_CELL, default_cell_cff, NULL);
         ierr = Homogenization_solve(homo);
-        prd = 4;
+        prd = 8;
         ierr = TrescaBP_init_(ms_bvp, prd, GRIDS_ON_CELL, default_cell_cff, NULL);
         ierr = TrescaBP_set_conds(ms_bvp, GRIDS_ON_TIME, default_T, default_bdy_f, default_tr_f1, default_tr_f2, default_Tresca_bnd);
         ierr = TrescaBP_init_(homo_bvp, prd, GRIDS_ON_CELL, const_cell_cff, &homo->C_eff[0]);
@@ -356,7 +356,7 @@ PetscErrorCode test_set(char op, Homogenization *homo, TrescaBP *ms_bvp, TrescaB
     case 'c':
         ierr = Homogenization_init_(homo, GRIDS_ON_CELL, default_cell_cff, NULL);
         ierr = Homogenization_solve(homo);
-        prd = 8;
+        prd = 16;
         ierr = TrescaBP_init_(ms_bvp, prd, GRIDS_ON_CELL, default_cell_cff, NULL);
         ierr = TrescaBP_set_conds(ms_bvp, GRIDS_ON_TIME, default_T, default_bdy_f, default_tr_f1, default_tr_f2, default_Tresca_bnd);
         ierr = TrescaBP_init_(homo_bvp, prd, GRIDS_ON_CELL, const_cell_cff, &homo->C_eff[0]);
@@ -365,7 +365,7 @@ PetscErrorCode test_set(char op, Homogenization *homo, TrescaBP *ms_bvp, TrescaB
     case 'd':
         ierr = Homogenization_init_(homo, GRIDS_ON_CELL, default_cell_cff, NULL);
         ierr = Homogenization_solve(homo);
-        prd = 16;
+        prd = 32;
         ierr = TrescaBP_init_(ms_bvp, prd, GRIDS_ON_CELL, default_cell_cff, NULL);
         ierr = TrescaBP_set_conds(ms_bvp, GRIDS_ON_TIME, default_T, default_bdy_f, default_tr_f1, default_tr_f2, default_Tresca_bnd);
         ierr = TrescaBP_init_(homo_bvp, prd, GRIDS_ON_CELL, const_cell_cff, &homo->C_eff[0]);
@@ -374,7 +374,7 @@ PetscErrorCode test_set(char op, Homogenization *homo, TrescaBP *ms_bvp, TrescaB
     case 'e':
         ierr = Homogenization_init_(homo, GRIDS_ON_CELL, connected_cell_cff, NULL);
         ierr = Homogenization_solve(homo);
-        prd = 2;
+        prd = 4;
         ierr = TrescaBP_init_(ms_bvp, prd, GRIDS_ON_CELL, connected_cell_cff, NULL);
         ierr = TrescaBP_set_conds(ms_bvp, GRIDS_ON_TIME, default_T, default_bdy_f, default_tr_f1, default_tr_f2, default_Tresca_bnd);
         ierr = TrescaBP_init_(homo_bvp, prd, GRIDS_ON_CELL, const_cell_cff, &homo->C_eff[0]);
@@ -383,7 +383,7 @@ PetscErrorCode test_set(char op, Homogenization *homo, TrescaBP *ms_bvp, TrescaB
     case 'f':
         ierr = Homogenization_init_(homo, GRIDS_ON_CELL, connected_cell_cff, NULL);
         ierr = Homogenization_solve(homo);
-        prd = 4;
+        prd = 8;
         ierr = TrescaBP_init_(ms_bvp, prd, GRIDS_ON_CELL, connected_cell_cff, NULL);
         ierr = TrescaBP_set_conds(ms_bvp, GRIDS_ON_TIME, default_T, default_bdy_f, default_tr_f1, default_tr_f2, default_Tresca_bnd);
         ierr = TrescaBP_init_(homo_bvp, prd, GRIDS_ON_CELL, const_cell_cff, &homo->C_eff[0]);
@@ -392,7 +392,7 @@ PetscErrorCode test_set(char op, Homogenization *homo, TrescaBP *ms_bvp, TrescaB
     case 'g':
         ierr = Homogenization_init_(homo, GRIDS_ON_CELL, connected_cell_cff, NULL);
         ierr = Homogenization_solve(homo);
-        prd = 8;
+        prd = 16;
         ierr = TrescaBP_init_(ms_bvp, prd, GRIDS_ON_CELL, connected_cell_cff, NULL);
         ierr = TrescaBP_set_conds(ms_bvp, GRIDS_ON_TIME, default_T, default_bdy_f, default_tr_f1, default_tr_f2, default_Tresca_bnd);
         ierr = TrescaBP_init_(homo_bvp, prd, GRIDS_ON_CELL, const_cell_cff, &homo->C_eff[0]);
@@ -401,7 +401,7 @@ PetscErrorCode test_set(char op, Homogenization *homo, TrescaBP *ms_bvp, TrescaB
     case 'h':
         ierr = Homogenization_init_(homo, GRIDS_ON_CELL, connected_cell_cff, NULL);
         ierr = Homogenization_solve(homo);
-        prd = 16;
+        prd = 32;
         ierr = TrescaBP_init_(ms_bvp, prd, GRIDS_ON_CELL, connected_cell_cff, NULL);
         ierr = TrescaBP_set_conds(ms_bvp, GRIDS_ON_TIME, default_T, default_bdy_f, default_tr_f1, default_tr_f2, default_Tresca_bnd);
         ierr = TrescaBP_init_(homo_bvp, prd, GRIDS_ON_CELL, const_cell_cff, &homo->C_eff[0]);
