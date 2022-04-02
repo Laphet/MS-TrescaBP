@@ -321,9 +321,20 @@ PetscErrorCode get_errors(Vec u_ms, Vec u_homo, TrescaBP ms_bvp, TrescaBP homo_b
 PetscErrorCode test_set(char op, Homogenization *homo, TrescaBP *ms_bvp, TrescaBP *homo_bvp)
 {
     PetscErrorCode ierr = 0;
-    unsigned int prd;
+    unsigned int prd, _grids_on_time, _grids_on_cell;
     switch (op)
     {
+    case:
+        'x' : prd = 2;
+        _grids_on_time = 32;
+        _grids_on_cell = 8;
+        ierr = Homogenization_init_(homo, _grids_on_cell, default_cell_cff, NULL);
+        ierr = Homogenization_solve(homo);
+        ierr = TrescaBP_init_(ms_bvp, prd, _grids_on_cell, default_cell_cff, NULL);
+        ierr = TrescaBP_set_conds(ms_bvp, _grids_on_time, default_T, default_bdy_f, default_tr_f1, default_tr_f2, default_Tresca_bnd);
+        ierr = TrescaBP_init_(homo_bvp, prd, _grids_on_cell, const_cell_cff, &homo->C_eff[0]);
+        ierr = TrescaBP_set_conds(homo_bvp, _grids_on_time, default_T, default_bdy_f, default_tr_f1, default_tr_f2, default_Tresca_bnd);
+        break;
     case 'a':
         ierr = Homogenization_init_(homo, GRIDS_ON_CELL, default_cell_cff, NULL);
         ierr = Homogenization_solve(homo);
@@ -425,7 +436,7 @@ int main(int argc, char *argv[])
     TrescaBP ms_bvp, homo_bvp;
     ierr = test_set(op[0], &homo, &ms_bvp, &homo_bvp);
     get_timestr(timestr);
-    ierr = PetscPrintf(PETSC_COMM_WORLD, "%s...... Option=[%s], epsilon=1/%d, h=1/%d.\n", timestr, op, ms_bvp.ctx.prd, ms_bvp.ctx.grids_on_dmn);
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "%s...... Option=[%s], epsilon=1/%d, h=1/%d, tau=1%d.\n", timestr, op, ms_bvp.ctx.prd, ms_bvp.ctx.grids_on_dmn, ms_bvp.grids_on_time);
     CHKERRQ(ierr);
     PetscScalar errors[3 * ms_bvp.grids_on_time], max_error_l2 = 0.0, max_error_h1 = 0.0, max_error_h1_corr = 0.0;
 
