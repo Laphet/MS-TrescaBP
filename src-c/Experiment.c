@@ -324,8 +324,8 @@ PetscErrorCode test_set(char op, Homogenization *homo, TrescaBP *ms_bvp, TrescaB
     unsigned int prd, _grids_on_time, _grids_on_cell;
     switch (op)
     {
-    case:
-        'x' : prd = 2;
+    case 'x':
+        prd = 2;
         _grids_on_time = 32;
         _grids_on_cell = 8;
         ierr = Homogenization_init_(homo, _grids_on_cell, default_cell_cff, NULL);
@@ -429,14 +429,14 @@ int main(int argc, char *argv[])
         printf("pid=%d, sum=%d.\n", pid, sum);
     }
     */
-    char op[] = "a";
+    char op[] = "x";
     ierr = PetscOptionsGetString(NULL, NULL, "-op", op, sizeof(op), NULL);
     CHKERRQ(ierr);
     Homogenization homo;
     TrescaBP ms_bvp, homo_bvp;
     ierr = test_set(op[0], &homo, &ms_bvp, &homo_bvp);
     get_timestr(timestr);
-    ierr = PetscPrintf(PETSC_COMM_WORLD, "%s...... Option=[%s], epsilon=1/%d, h=1/%d, tau=1%d.\n", timestr, op, ms_bvp.ctx.prd, ms_bvp.ctx.grids_on_dmn, ms_bvp.grids_on_time);
+    ierr = PetscPrintf(PETSC_COMM_WORLD, "%s...... Option=[%s], epsilon=1/%d, h=1/%d, tau=T/%d.\n", timestr, op, ms_bvp.ctx.prd, ms_bvp.ctx.grids_on_dmn, ms_bvp.grids_on_time);
     CHKERRQ(ierr);
     PetscScalar errors[3 * ms_bvp.grids_on_time], max_error_l2 = 0.0, max_error_h1 = 0.0, max_error_h1_corr = 0.0;
 
